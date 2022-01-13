@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  awsl-py:
+    build: .
+    image: registry.cn-beijing.aliyuncs.com/dreamhunter/awsl:fastapi
+    container_name: awsl-py
+    environment:
+      ENV_FILE: .env
+    volumes:
+      - ../.env.local:.env
+    ports:
+        - "8000:8000"
