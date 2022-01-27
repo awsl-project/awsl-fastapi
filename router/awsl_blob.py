@@ -10,7 +10,7 @@ from router.models.pydantic_models import Blobs
 from .tools import DBSession
 from .models.models import Mblog, AwslBlob
 from .config import WB_URL_PREFIX
-from .response_models import BlobItem, Message, PicItem
+from .response_models import BlobItem, Message
 
 
 router = APIRouter()

@@ -1,4 +1,7 @@
+from typing import Dict
 from pydantic import BaseModel
+
+from .models.pydantic_models import Blob
 
 
 class ProducerItem(BaseModel):
@@ -19,7 +22,7 @@ class PicItem(BaseModel):
 class BlobItem(BaseModel):
     pic_id: str
     wb_url: str
-    pic_info: dict
+    pic_info: Dict[str, Blob]
 
 
 class Message(BaseModel):
