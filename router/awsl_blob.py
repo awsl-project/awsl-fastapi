@@ -44,13 +44,9 @@ def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Option
 def awsl_list_count(uid: Optional[str] = "") -> int:
     session = DBSession()
     try:
-        res = session.query(func.count(AwslBlob.id)).join(
-                Mblog, AwslBlob.awsl_id == Mblog.id
-            ).filter(
-                Mblog.uid == uid
-            ).one() if uid else session.query(func.count(AwslBlob.id)).join(
-                Mblog, AwslBlob.awsl_id == Mblog.id
-            ).one()
+        res = session.query(func.count(AwslBlob.id)).filter(
+            Mblog.uid == uid
+        ).one() if uid else session.query(func.count(AwslBlob.id)).one()
     finally:
         session.close()
     return int(res[0]) if res else 0
