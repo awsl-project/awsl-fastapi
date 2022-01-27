@@ -16,5 +16,11 @@ class PicItem(BaseModel):
     pic_info: dict
 
 
+class BlobItem(BaseModel):
+    pic_id: str
+    wb_url: str
+    pic_info: dict
+
+
 class Message(BaseModel):
     message: str
