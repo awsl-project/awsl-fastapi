@@ -5,11 +5,11 @@ from fastapi import APIRouter
 from sqlalchemy.sql import func
 from fastapi.responses import JSONResponse
 
-from router.models.pydantic_models import Blobs
+from router.models.pydantic_models import Blob, Blobs
 
 from .tools import DBSession
 from .models.models import Mblog, AwslBlob
-from .config import WB_URL_PREFIX
+from .config import WB_URL_PREFIX, settings
 from .response_models import BlobItem, Message
 
 
@@ -35,7 +35,13 @@ def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Option
             wb_url=WB_URL_PREFIX.format(
                 blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
             pic_id=blob.pic_id,
-            pic_info=Blobs.parse_raw(blob.pic_info).blobs
+            pic_info={
+                blob_key: Blob(
+                    url=blob_pic.url.replace(settings.origin, settings.cdn),
+                    width=blob_pic.width, height=blob_pic.height
+                )
+                for blob_key, blob_pic in Blobs.parse_raw(blob.pic_info).blobs.items()
+            }
         ) for blob in blobs if blob.awsl_mblog]
     finally:
         session.close()

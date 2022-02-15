@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     cookie_sub: str
     db_url: str
     broker: str
+    origin: str
+    cdn: str
 
     class Config:
         env_file = os.environ.get("ENV_FILE", ".env")
