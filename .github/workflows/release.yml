@@ -27,6 +27,6 @@ jobs:
           password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
       - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag dreamhunter2333.azurecr.io/awsl/awsl-api:${{ steps.get_version.outputs.VERSION }}
+        run: docker build . --file docker/dockerfile --tag dreamhunter2333.azurecr.io/awsl/awsl-api:${{ steps.get_version.outputs.VERSION }}
       - name: Push the Docker image
         run: docker push dreamhunter2333.azurecr.io/awsl/awsl-api:${{ steps.get_version.outputs.VERSION }}
