@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi import status
 from fastapi import APIRouter
 from celery import Celery
+from retry import retry
 
 from .models.models import AwslProducer
 from .config import settings, WB_PROFILE
@@ -63,6 +64,11 @@ def add_awsl_producers(producer: ProducerItem):
         session.commit()
     finally:
         session.close()
+    trigger_awsl_task()
+    return True
+
+
+@retry(Exception, delay=5, jitter=(1, 3), max_delay=50, tries=5, logger=_logger)
+def trigger_awsl_task():
     app = Celery('awsl-tasks', broker=settings.broker)
     app.send_task("awsl_start.start_awsl")
-    return True
