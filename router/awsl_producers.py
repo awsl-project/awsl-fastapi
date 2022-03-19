@@ -1,4 +1,6 @@
 import logging
+import threading
+
 from typing import List
 
 from fastapi.responses import JSONResponse
@@ -64,7 +66,7 @@ def add_awsl_producers(producer: ProducerItem):
         session.commit()
     finally:
         session.close()
-    trigger_awsl_task()
+    threading.Thread(target=trigger_awsl_task).start()
     return True
 
 
