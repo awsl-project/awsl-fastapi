@@ -1,16 +1,13 @@
 import logging
-import threading
 
 from typing import List
 
 from fastapi.responses import JSONResponse
 from fastapi import status
 from fastapi import APIRouter
-from celery import Celery
-from retry import retry
 
 from .models.models import AwslProducer
-from .config import settings, WB_PROFILE
+from .config import WB_PROFILE
 from .tools import Tools, DBSession
 from .response_models import ProducerItem, ProducerRes, Message
 
@@ -66,11 +63,4 @@ def add_awsl_producers(producer: ProducerItem):
         session.commit()
     finally:
         session.close()
-    threading.Thread(target=trigger_awsl_task).start()
     return True
-
-
-@retry(Exception, delay=5, jitter=(1, 3), max_delay=50, tries=5, logger=_logger)
-def trigger_awsl_task():
-    app = Celery('awsl-tasks', broker=settings.broker)
-    app.send_task("awsl_start.start_awsl")
