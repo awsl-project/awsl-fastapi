@@ -37,6 +37,12 @@ def add_awsl_producers(producer: ProducerItem):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "uid is None"}
         )
+    if not producer.keyword:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "keyword is null"}
+        )
+
     profile = Tools.wb_get(url=WB_PROFILE.format(producer.uid))
     if not profile or not profile.get("data", {}).get("user"):
         return JSONResponse(
