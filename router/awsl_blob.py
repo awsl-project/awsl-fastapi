@@ -1,4 +1,5 @@
 import logging
+import random
 
 from typing import List, Optional
 from fastapi import APIRouter
@@ -58,3 +59,20 @@ def awsl_list_count(uid: Optional[str] = "") -> int:
     finally:
         session.close()
     return int(res[0]) if res else 0
+
+
+@router.get("/v2/random", response_model=str)
+def awsl_random() -> str:
+    session = DBSession()
+    try:
+        count = session.query(func.count(AwslBlob.id)).one()
+        count = int(count[0]) if count else 0
+        blob = session.query(AwslBlob).join(
+            Mblog, AwslBlob.awsl_id == Mblog.id
+        ).order_by(AwslBlob.awsl_id.desc()).limit(1).offset(
+            random.randint(0, count - 1)
+        ).one()
+        url_dict = Blobs.parse_raw(blob.pic_info).blobs
+        return url_dict["original"].url
+    finally:
+        session.close()
