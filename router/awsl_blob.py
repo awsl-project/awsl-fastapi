@@ -65,13 +65,9 @@ def awsl_list_count(uid: Optional[str] = "") -> int:
 def awsl_random() -> str:
     session = DBSession()
     try:
-        count = session.query(func.count(AwslBlob.id)).one()
-        count = int(count[0]) if count else 0
-        blob = session.query(AwslBlob).join(
-            Mblog, AwslBlob.awsl_id == Mblog.id
-        ).order_by(AwslBlob.awsl_id.desc()).limit(1).offset(
-            random.randint(0, count - 1)
-        ).one()
+        blob = session.query(AwslBlob).order_by(
+            func.rand()
+        ).limit(1).one()
         url_dict = Blobs.parse_raw(blob.pic_info).blobs
         return url_dict["original"].url
     finally:
