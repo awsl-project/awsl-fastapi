@@ -2,6 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from fastapi import APIRouter
+from fastapi.responses import PlainTextResponse
 
 from .moyu_config import FEST_MAP, MO_YU_TEMPLATE, TZ, WEEK_DAYS
 
@@ -22,7 +23,7 @@ def get_salaryday(now: datetime, day: int) -> int:
     ).days
 
 
-@router.get("/moyu", response_model=str)
+@router.get("/moyu", response_class=PlainTextResponse)
 def get_moyu_message() -> str:
 
     res = ""
