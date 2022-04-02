@@ -67,4 +67,4 @@ FEST_MAP: Dict[datetime, str] = {
 }
 
 
-WEEK_DAYS = "一二三四五六七"
+WEEK_DAYS = "一二三四五六日"
