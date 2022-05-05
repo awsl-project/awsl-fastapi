@@ -22,6 +22,19 @@ MO_YU_TEMPLATE = """
  距离【周六】还有 {day_to_weekend} 天
 """
 
+MO_YU_TEMPLATE_DAY_N = """
+【摸鱼办】提醒您:
+
+ 今天是 {year}年{month}月{day}日, 星期{weekday}
+ 你好, 摸鱼人！工作再忙, 一定不要忘记摸鱼哦！
+ 有事没事起身去茶水间, 去厕所, 去走廊走走, 去找同事聊聊八卦别老在工位上坐着, 钱是老板的但命是自己的。
+
+ 温馨提示:
+ {year}年 已经过去 {passdays} 天 {passhours} 小时
+ 距离【 {salaryday} 号发工资】: {salarydayn} 天
+ 距离【周六】还有 {day_to_weekend} 天
+"""
+
 QINGMING_DATE = datetime(2022, 4, 3, tzinfo=TZ)
 QINGMING = """
  距离【清明】还有 {day} 天 {hour} 小时。清明节: 4 月 3 日 至 5 日放假调休, 共 3 天。4 月 2 日(星期六)上班。
