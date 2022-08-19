@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from .config import settings, WB_COOKIE
 
-engine = create_engine(settings.db_url, pool_size=100)
+engine = create_engine(settings.db_url, pool_size=100, pool_recycle=3600)
 DBSession = sessionmaker(bind=engine)
 
 _logger = logging.getLogger(__name__)
