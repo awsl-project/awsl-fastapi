@@ -1,13 +1,14 @@
 version: "2"
 
 services:
-  awsl-py:
-    build: .
-    image: registry.cn-beijing.aliyuncs.com/dreamhunter/awsl:fastapi
-    container_name: awsl-py
+  awsl-mysql:
+    image: mysql
+    container_name: awsl-mysql
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      ENV_FILE: .env
-    volumes:
-      - ../.env.local:.env
+      MYSQL_DATABASE: awsl
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: cXFxcXFxcXExCg==
+      MYSQL_ROOT_PASSWORD: cXFxcXFxcXExCg==
     ports:
-        - "8000:8000"
+      - "9306:3306"

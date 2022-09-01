@@ -23,7 +23,7 @@ def get_salaryday(now: datetime, day: int) -> int:
     ).days
 
 
-@router.get("/moyu", response_class=PlainTextResponse)
+@router.get("/moyu", response_class=PlainTextResponse, tags=["moyu"])
 def get_moyu_message() -> str:
 
     res = ""
@@ -61,7 +61,7 @@ def get_moyu_message() -> str:
     return res
 
 
-@router.get("/moyu8", response_class=PlainTextResponse)
+@router.get("/moyu8", response_class=PlainTextResponse, tags=["moyu"])
 def get_moyu_message_copy(day: int = 1) -> str:
 
     res = ""

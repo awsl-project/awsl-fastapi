@@ -14,6 +14,7 @@ CHUNK_SIZE = 9
 
 class Settings(BaseSettings):
     cookie_sub: str
+    token: str
     db_url: str
     origin: str
     cdn: str
