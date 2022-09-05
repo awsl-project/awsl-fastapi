@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from pydantic import BaseSettings
 
@@ -15,6 +16,8 @@ CHUNK_SIZE = 9
 class Settings(BaseSettings):
     cookie_sub: str
     token: str
+    ios_in_review: str
+    ios_in_review_uids: List[str]
     db_url: str
     origin: str
     cdn: str
