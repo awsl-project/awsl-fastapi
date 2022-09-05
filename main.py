@@ -8,6 +8,7 @@ from router.awsl_pic import router as pic_router
 from router.awsl_blob import router as blob_router
 from router.health_check import router as health_check_router
 from router.moyuban import router as moyu_router
+from router.ios_faker import router as ios_faker_router
 
 app = FastAPI()
 
@@ -25,3 +26,4 @@ app.include_router(pic_router, prefix="")
 app.include_router(blob_router, prefix="")
 app.include_router(health_check_router, prefix="")
 app.include_router(moyu_router, prefix="")
+app.include_router(ios_faker_router, prefix="")
