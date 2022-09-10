@@ -25,7 +25,14 @@ _logger = logging.getLogger(__name__)
 
 @router.get("/in_review", response_model=Review, tags=["ios faker"])
 def in_review():
-    return Review(version=settings.ios_in_review)
+    return Review.parse_file(settings.ios_in_review_path)
+
+
+@router.post("/in_review", response_model=bool, tags=["ios faker"])
+def set_review(review: Review):
+    with open(settings.ios_in_review_path, "w") as f:
+        f.write(review.json())
+    return True
 
 
 @router.get("/list_in_review", response_model=List[BlobItem], responses={404: {"model": Message}}, tags=["ios faker"])
