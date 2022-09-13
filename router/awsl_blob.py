@@ -24,7 +24,7 @@ class ProducerPhotos(BaseModel):
     photos: List[BlobItem]
 
 
-@router.get("/producer_photos", response_model=List[ProducerPhotos], responses={404: {"model": Message}})
+@router.get("/producer_photos", response_model=List[ProducerPhotos], responses={404: {"model": Message}}, tags=["AwslV2"])
 def producer_photos(uids: Optional[List[str]] = None, limit: Optional[int] = 5):
     if limit > 1000:
         return JSONResponse(
@@ -55,7 +55,7 @@ def producer_photos(uids: Optional[List[str]] = None, limit: Optional[int] = 5):
         session.close()
 
 
-@router.get("/v2/list", response_model=List[BlobItem], responses={404: {"model": Message}})
+@router.get("/v2/list", response_model=List[BlobItem], responses={404: {"model": Message}}, tags=["AwslV2"])
 def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Optional[int] = 0):
     if limit > 1000:
         return JSONResponse(
@@ -86,7 +86,7 @@ def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Option
     return res
 
 
-@router.get("/v2/list_count", response_model=int)
+@router.get("/v2/list_count", response_model=int, tags=["AwslV2"])
 def awsl_list_count(uid: Optional[str] = "") -> int:
     session = DBSession()
     try:
@@ -98,7 +98,7 @@ def awsl_list_count(uid: Optional[str] = "") -> int:
     return int(res[0]) if res else 0
 
 
-@router.get("/v2/random", response_model=str)
+@router.get("/v2/random", response_model=str, tags=["AwslV2"])
 def awsl_random() -> str:
     session = DBSession()
     try:
@@ -107,5 +107,28 @@ def awsl_random() -> str:
         ).limit(1).one()
         url_dict = Blobs.parse_raw(blob.pic_info).blobs
         return url_dict["original"].url
+    finally:
+        session.close()
+
+
+@router.get("/v2/random_json", response_model=BlobItem, tags=["AwslV2"])
+def awsl_random_json() -> str:
+    session = DBSession()
+    try:
+        blob = session.query(AwslBlob).order_by(
+            func.rand()
+        ).limit(1).one()
+        return BlobItem(
+            wb_url=WB_URL_PREFIX.format(
+                blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
+            pic_id=blob.pic_id,
+            pic_info={
+                blob_key: Blob(
+                    url=blob_pic.url.replace(settings.origin, settings.cdn),
+                    width=blob_pic.width, height=blob_pic.height
+                )
+                for blob_key, blob_pic in Blobs.parse_raw(blob.pic_info).blobs.items()
+            }
+        )
     finally:
         session.close()
