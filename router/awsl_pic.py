@@ -29,7 +29,7 @@ def format_picinfo(pic_info: dict):
     return pic_info
 
 
-@router.get("/list", response_model=List[PicItem], responses={404: {"model": Message}})
+@router.get("/list", response_model=List[PicItem], responses={404: {"model": Message}}, tags=["AwslV1"])
 def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Optional[int] = 0):
     if limit > 1000:
         return JSONResponse(
@@ -52,17 +52,17 @@ def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Option
     return res
 
 
-@router.get("/list_count", response_model=int)
+@router.get("/list_count", response_model=int, tags=["AwslV1"])
 def awsl_list_count(uid: Optional[str] = "") -> int:
     session = DBSession()
     try:
         res = session.query(func.count(Pic.id)).join(
-                Mblog, Pic.awsl_id == Mblog.id
-            ).filter(
-                Mblog.uid == uid
-            ).one() if uid else session.query(func.count(Pic.id)).join(
-                Mblog, Pic.awsl_id == Mblog.id
-            ).one()
+            Mblog, Pic.awsl_id == Mblog.id
+        ).filter(
+            Mblog.uid == uid
+        ).one() if uid else session.query(func.count(Pic.id)).join(
+            Mblog, Pic.awsl_id == Mblog.id
+        ).one()
     finally:
         session.close()
     return int(res[0]) if res else 0
