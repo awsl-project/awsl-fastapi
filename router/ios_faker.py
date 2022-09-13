@@ -19,6 +19,11 @@ class Review(BaseModel):
     version: str
 
 
+class FakeBlobItems(BaseModel):
+    __root__: List[BlobItem]
+
+
+FAKE_UID = "0"
 router = APIRouter()
 _logger = logging.getLogger(__name__)
 
@@ -36,7 +41,7 @@ def set_review(review: Review):
 
 
 @router.get("/list_in_review", response_model=List[BlobItem], responses={404: {"model": Message}}, tags=["ios faker"])
-def list_in_review(limit: Optional[int] = 10, offset: Optional[int] = 0):
+def list_in_review(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Optional[int] = 0):
     if limit > 1000:
         return JSONResponse(
             status_code=404,
@@ -45,34 +50,57 @@ def list_in_review(limit: Optional[int] = 10, offset: Optional[int] = 0):
     _logger.info("list_in_review get limit %s offest %s" % (limit, offset))
     session = DBSession()
     try:
+        res = []
+        if uid == FAKE_UID or not uid:
+            res = FakeBlobItems.parse_file(
+                settings.ios_in_review_fake_path).__root__
+            if offset+limit <= len(res):
+                return res[offset:offset+limit]
+            if offset >= len(res):
+                offset -= len(res)
+                res = []
+            elif res:
+                res = res[offset:]
+                limit -= len(res)
+                offset = 0
         blobs = session.query(AwslBlob).join(Mblog, AwslBlob.awsl_id == Mblog.id).filter(
             Mblog.uid.in_(settings.ios_in_review_uids)
+            if not uid else Mblog.uid == uid
         ).order_by(AwslBlob.awsl_id.desc()).limit(limit).offset(offset).all()
-        res = [BlobItem(
-            wb_url=WB_URL_PREFIX.format(
-                blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
-            pic_id=blob.pic_id,
-            pic_info={
-                blob_key: Blob(
-                    url=blob_pic.url.replace(settings.origin, settings.cdn),
-                    width=blob_pic.width, height=blob_pic.height
-                )
-                for blob_key, blob_pic in Blobs.parse_raw(blob.pic_info).blobs.items()
-            }
-        ) for blob in blobs if blob.awsl_mblog]
+        return res + [
+            BlobItem(
+                wb_url=WB_URL_PREFIX.format(
+                    blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
+                pic_id=blob.pic_id,
+                pic_info={
+                    blob_key: Blob(
+                        url=blob_pic.url.replace(
+                            settings.origin, settings.cdn),
+                        width=blob_pic.width, height=blob_pic.height
+                    )
+                    for blob_key, blob_pic in Blobs.parse_raw(blob.pic_info).blobs.items()
+                }
+            ) for blob in blobs if blob.awsl_mblog]
     finally:
         session.close()
-    return res
 
 
 @router.get("/list_count_review", response_model=int, tags=["ios faker"])
-def list_count_review() -> int:
+def list_count_review(uid: Optional[str] = "", ) -> int:
     session = DBSession()
     try:
+        fake = FakeBlobItems.parse_file(
+            settings.ios_in_review_fake_path).__root__
+        if uid == FAKE_UID:
+            return len(fake)
         res = session.query(func.count(AwslBlob.id)).join(Mblog, AwslBlob.awsl_id == Mblog.id).filter(
             Mblog.uid.in_(settings.ios_in_review_uids)
+            if not uid else Mblog.uid == uid
         ).one_or_none()
-        return int(res[0]) if res else 0
+        res = int(res[0]) if res else 0
+        if not uid:
+            res += len(fake)
+        return res
     finally:
         session.close()
 
@@ -83,4 +111,13 @@ def list_count_review() -> int:
     responses={404: {"model": Message}}, tags=["ios faker"]
 )
 def producer_photos_in_review(limit: Optional[int] = 5):
-    return producer_photos(uids=settings.ios_in_review_uids, limit=limit)
+    return [
+        ProducerPhotos(
+            uid=FAKE_UID,
+            name="春风抚绿芭蕉",
+            photos=FakeBlobItems.parse_file(
+                settings.ios_in_review_fake_path).__root__
+        )
+    ][:limit] + producer_photos(
+        uids=settings.ios_in_review_uids, limit=limit
+    )

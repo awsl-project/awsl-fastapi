@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     token: str
     ios_in_review_path: str
     ios_in_review_uids: List[str]
+    ios_in_review_fake_path: str
     db_url: str
     origin: str
     cdn: str
