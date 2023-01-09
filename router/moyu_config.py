@@ -35,11 +35,6 @@ MO_YU_TEMPLATE_DAY_N = """
  距离【周六】还有 {day_to_weekend} 天
 """
 
-SPRINGFEST_DATE = datetime(2023, 1, 22, tzinfo=TZ)
-SPRINGFEST = """
- 距离【春节】还有 {day} 天 {hour} 小时。春节：1月21日至27日放假调休，共7天。
-"""
-
 QINGMING_DATE = datetime(2023, 4, 5, tzinfo=TZ)
 QINGMING = """
  距离【清明】还有 {day} 天 {hour} 小时。清明节：4月5日放假，共 1 天。
@@ -70,19 +65,19 @@ NEWYEAR = """
  距离【元旦】还有 {day} 天 {hour} 小时。
 """
 
-# SPRINGFEST_DATE = datetime(2023, 1, 22, tzinfo=TZ)
-# SPRINGFEST = """
-#  距离【春节】还有 {day} 天 {hour} 小时。春节：1月21日至27日放假调休，共7天。
-# """
+SPRINGFEST_DATE = datetime(2023, 1, 22, tzinfo=TZ)
+SPRINGFEST = """
+ 距离【春节】还有 {day} 天 {hour} 小时。春节：1月21日至27日放假调休，共7天。
+"""
 
 FEST_MAP: Dict[datetime, str] = {
+    SPRINGFEST_DATE: SPRINGFEST,
     QINGMING_DATE: QINGMING,
     WUYI_DATE: WUYI,
     DUANWU_DATE: DUANWU,
     ZHONGQIU_DATE: ZHONGQIU,
-    GUOQING_DATE: GUOQING,
+#     GUOQING_DATE: GUOQING,
     NEWYEAR_DATE: NEWYEAR,
-    SPRINGFEST_DATE: SPRINGFEST,
 }
 
 
