@@ -1,3 +1,4 @@
+import logging
 import os
 
 from fastapi import FastAPI
@@ -11,6 +12,15 @@ from router.moyuban import router as moyu_router
 from router.ios_faker import router as ios_faker_router
 
 app = FastAPI()
+
+
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.getMessage().find("/health_check") == -1
+
+
+# Add filter to the logger
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
 if os.environ.get("DEV"):
     app.add_middleware(
