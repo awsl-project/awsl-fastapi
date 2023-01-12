@@ -12,3 +12,31 @@ services:
       MYSQL_ROOT_PASSWORD: cXFxcXFxcXExCg==
     ports:
       - "9306:3306"
+
+  prometheus:
+    image: bitnami/prometheus
+    container_name: prometheus
+    restart: always
+    ports:
+      - 9999:9090
+    volumes:
+      - './prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml'
+
+  pushgateway:
+    image: bitnami/pushgateway
+    container_name: pushgateway
+    restart: always
+    ports:
+      - 9091:9091
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin

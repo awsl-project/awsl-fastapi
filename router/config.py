@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     db_url: str
     origin: str
     cdn: str
+    enable_prometheus: bool
+    prometheus_host: str
+    instance_name: str
+    repeat_seconds: int
 
     class Config:
         env_file = os.environ.get("ENV_FILE", ".env")

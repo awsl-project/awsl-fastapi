@@ -8,11 +8,13 @@ click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
 fastapi==0.68.0
+-e git+https://github.com/dreamhunter2333/fastapi_prometheus_pusher.git@8454ad8bfebaa1b381ef4332c086de33955f8b1d#egg=fastapi_prometheus_pusher
 greenlet==1.1.2
 h11==0.12.0
 idna==3.3
 kombu==5.2.3
 mysql-connector-python==8.0.27
+prometheus-client==0.15.0
 prompt-toolkit==3.0.24
 protobuf==3.19.5
 pydantic==1.8.2
