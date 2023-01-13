@@ -21,7 +21,7 @@ if settings.enable_prometheus:
     @app.on_event("startup")
     async def startup():
         FastApiPusher(
-            excluded_handlers="health_check"
+            excluded_handlers=["health_check", "docs"]
         ).start(
             app, settings.prometheus_host,
             settings.instance_name,
@@ -31,7 +31,10 @@ if settings.enable_prometheus:
 
 class EndpointFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        return record.getMessage().find("/health_check") == -1
+        return all(
+            path not in record.getMessage()
+            for path in ["/health_check", "/docs", "/openapi.json"]
+        )
 
 
 # Add filter to the logger
