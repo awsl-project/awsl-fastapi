@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 
 @ratelimit(10, 10)
-@router.get("/chatgpt", response_class=PlainTextResponse, tags=["chatgpt"])
+@router.post("/chatgpt", response_class=PlainTextResponse, tags=["chatgpt"])
 def get_chatgpt_message(token: str, text: str, chat_id: str = "Default") -> str:
     if token != Tools.get_api_token():
         return JSONResponse(
