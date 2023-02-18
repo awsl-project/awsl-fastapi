@@ -8,8 +8,8 @@ services:
     environment:
       MYSQL_DATABASE: awsl
       MYSQL_USER: admin
-      MYSQL_PASSWORD: cXFxcXFxcXExCg==
-      MYSQL_ROOT_PASSWORD: cXFxcXFxcXExCg==
+      MYSQL_PASSWORD: 12345
+      MYSQL_ROOT_PASSWORD: 12345
     ports:
       - "9306:3306"
 
