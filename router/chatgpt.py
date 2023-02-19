@@ -1,6 +1,7 @@
 import logging
 
 from functools import lru_cache
+from pydantic import BaseModel
 from fastapi import status, APIRouter
 from fastapi.responses import PlainTextResponse, JSONResponse
 from revChatGPT.V1 import Chatbot
@@ -12,19 +13,28 @@ router = APIRouter()
 _logger = logging.getLogger(__name__)
 
 
+class ChatgptMessage(BaseModel):
+    token: str
+    text: str
+    chat_id: str = "Default"
+
+
 @ratelimit(10, 10)
 @router.post("/chatgpt", response_class=PlainTextResponse, tags=["chatgpt"])
-def get_chatgpt_message(token: str, text: str, chat_id: str = "Default") -> str:
-    if token != Tools.get_api_token():
+def get_chatgpt_message(chatgpt_message: ChatgptMessage) -> str:
+    if chatgpt_message.token != Tools.get_api_token():
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "token is not correct"}
         )
-    chatbot = get_chatbot(chat_id)
-    res = ""
-    for data in chatbot.ask(text):
-        res = data["message"]
-    return res
+    chatbot = get_chatbot(chatgpt_message.chat_id)
+    try:
+        res = ""
+        for data in chatbot.ask(chatgpt_message.text):
+            res = data["message"]
+        return res
+    except Exception as e:
+        get_chatbot.cache_clear()
 
 
 @lru_cache()
