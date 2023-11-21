@@ -11,7 +11,6 @@ from router.awsl_blob import router as blob_router
 from router.health_check import router as health_check_router
 from router.moyuban import router as moyu_router
 from router.ios_faker import router as ios_faker_router
-from router.chatgpt import router as chatgpt_router
 from router.config import settings
 
 
@@ -56,4 +55,7 @@ app.include_router(blob_router, prefix="")
 app.include_router(health_check_router, prefix="")
 app.include_router(moyu_router, prefix="")
 app.include_router(ios_faker_router, prefix="")
-app.include_router(chatgpt_router, prefix="")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
