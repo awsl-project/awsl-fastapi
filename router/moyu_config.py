@@ -35,49 +35,50 @@ MO_YU_TEMPLATE_DAY_N = """
  距离【周六】还有 {day_to_weekend} 天
 """
 
-QINGMING_DATE = datetime(2023, 4, 5, tzinfo=TZ)
-QINGMING = """
- 距离【清明】还有 {day} 天 {hour} 小时。清明节: 4月5日放假, 共 1 天。
-"""
-
-WUYI_DATE = datetime(2023, 5, 1, tzinfo=TZ)
-WUYI = """
- 距离【五一】还有 {day} 天 {hour} 小时。劳动节: 劳动节: 4 月 29 日 至 5 月 3 日放假调休, 共5天。4月23日(星期日)、5月6日(星期六)上班。
-"""
-
-DUANWU_DATE = datetime(2023, 6, 22, tzinfo=TZ)
-DUANWU = """
- 距离【端午】还有 {day} 天 {hour} 小时。端午节: 6 月 22 日 至 24 日放假调休, 共 3 天。6月25日(星期日)上班。
-"""
-
-ZHONGQIU_DATE = datetime(2023, 9, 29, tzinfo=TZ)
-ZHONGQIU = """
- 距离【中秋+国庆】还有 {day} 天 {hour} 小时。中秋节、国庆节: 9 月 29 日 至 10 月 6 日放假调休, 共8天。10月7日(星期六)、10月8日(星期日)上班。
-"""
-
-# GUOQING_DATE = datetime(2022, 10, 1, tzinfo=TZ)
-# GUOQING = """
-#  距离【国庆】还有 {day} 天 {hour} 小时。国庆节: 10 月1 日 至 7 日放假调休, 共 7 天。
-# """
-
-NEWYEAR_DATE = datetime(2023, 1, 1, tzinfo=TZ)
+NEWYEAR_DATE = datetime(2023, 12, 30, tzinfo=TZ)
 NEWYEAR = """
- 距离【元旦】还有 {day} 天 {hour} 小时。
+ 距离【元旦】还有 {day} 天 {hour} 小时。2023年12月30日至2024年1月1日放假调休, 共3天。
 """
 
-SPRINGFEST_DATE = datetime(2023, 1, 22, tzinfo=TZ)
+SPRINGFEST_DATE = datetime(2024, 2, 10, tzinfo=TZ)
 SPRINGFEST = """
- 距离【春节】还有 {day} 天 {hour} 小时。春节: 1月21日至27日放假调休, 共7天。
+ 距离【春节】还有 {day} 天 {hour} 小时。2月10日至2月17日放假调休, 共8天。2月4日(星期日)、2月18日(星期日)上班。
 """
+
+QINGMING_DATE = datetime(2024, 4, 4, tzinfo=TZ)
+QINGMING = """
+ 距离【清明】还有 {day} 天 {hour} 小时。4月4日至4月6日放假调休, 共3天。4月7日(星期日)上班。
+"""
+
+WUYI_DATE = datetime(2024, 5, 1, tzinfo=TZ)
+WUYI = """
+ 距离【五一】还有 {day} 天 {hour} 小时。5月1日至5月5日放假调休, 共5天。4月28日(星期日)、5月11日(星期六)上班。
+"""
+
+DUANWU_DATE = datetime(2024, 6, 10, tzinfo=TZ)
+DUANWU = """
+ 距离【端午】还有 {day} 天 {hour} 小时。6月10日放假, 共1天。
+"""
+
+ZHONGQIU_DATE = datetime(2024, 9, 17, tzinfo=TZ)
+ZHONGQIU = """
+ 距离【中秋】还有 {day} 天 {hour} 小时。9月15日至9月17日放假调休, 共3天。9月14日(星期六)上班。
+"""
+
+GUOQING_DATE = datetime(2024, 10, 1, tzinfo=TZ)
+GUOQING = """
+ 距离【国庆】还有 {day} 天 {hour} 小时。10月1日至10月7日放假调休, 共7天。9月29日(星期日)、10月12日(星期六)上班。
+"""
+
 
 FEST_MAP: Dict[datetime, str] = {
+    NEWYEAR_DATE: NEWYEAR,
     SPRINGFEST_DATE: SPRINGFEST,
     QINGMING_DATE: QINGMING,
     WUYI_DATE: WUYI,
     DUANWU_DATE: DUANWU,
     ZHONGQIU_DATE: ZHONGQIU,
-    # GUOQING_DATE: GUOQING,
-    NEWYEAR_DATE: NEWYEAR,
+    GUOQING_DATE: GUOQING,
 }
 
 
