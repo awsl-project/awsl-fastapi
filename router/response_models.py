@@ -14,11 +14,6 @@ class ProducerRes(BaseModel):
     name: str
 
 
-class PicItem(BaseModel):
-    wb_url: str
-    pic_info: dict
-
-
 class BlobItem(BaseModel):
     pic_id: str
     wb_url: str

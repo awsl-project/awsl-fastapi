@@ -31,9 +31,8 @@ def producer_photos(uids: Optional[List[str]] = None, limit: Optional[int] = 5):
             status_code=404,
             content=Message(message="to large limit = {}".format(limit))
         )
-    _logger.info("producer_photos get limi %s" % limit)
-    session = DBSession()
-    try:
+    _logger.info("producer_photos get limit %s" % limit)
+    with DBSession() as session:
         q = session.query(
             AwslProducer
         ).filter(
@@ -51,8 +50,6 @@ def producer_photos(uids: Optional[List[str]] = None, limit: Optional[int] = 5):
                 photos=awsl_list(uid=producer.uid, limit=limit)
             ) for producer in producers
         ]
-    finally:
-        session.close()
 
 
 @router.get("/v2/list", response_model=List[BlobItem], responses={404: {"model": Message}}, tags=["AwslV2"])
@@ -63,8 +60,7 @@ def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Option
             content=Message(message="to large limit = {}".format(limit))
         )
     _logger.info("list get uid %s limit %s offest %s" % (uid, limit, offset))
-    session = DBSession()
-    try:
+    with DBSession() as session:
         blobs = session.query(AwslBlob).join(Mblog, AwslBlob.awsl_id == Mblog.id).filter(
             Mblog.uid == uid
         ).order_by(AwslBlob.awsl_id.desc()).limit(limit).offset(offset).all() if uid else session.query(AwslBlob).join(
@@ -81,40 +77,31 @@ def awsl_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Option
                 for blob_key, blob_pic in Blobs.parse_raw(blob.pic_info).blobs.items()
             }
         ) for blob in blobs if blob.awsl_mblog]
-    finally:
-        session.close()
-    return res
+        return res
 
 
 @router.get("/v2/list_count", response_model=int, tags=["AwslV2"])
 def awsl_list_count(uid: Optional[str] = "") -> int:
-    session = DBSession()
-    try:
+    with DBSession() as session:
         res = session.query(func.count(AwslBlob.id)).join(Mblog, AwslBlob.awsl_id == Mblog.id).filter(
             Mblog.uid == uid
         ).one() if uid else session.query(func.count(AwslBlob.id)).one()
-    finally:
-        session.close()
-    return int(res[0]) if res else 0
+        return int(res[0]) if res else 0
 
 
 @router.get("/v2/random", response_model=str, tags=["AwslV2"])
 def awsl_random() -> str:
-    session = DBSession()
-    try:
+    with DBSession() as session:
         blob = session.query(AwslBlob).order_by(
             func.rand()
         ).limit(1).one()
         url_dict = Blobs.parse_raw(blob.pic_info).blobs
         return url_dict["original"].url
-    finally:
-        session.close()
 
 
 @router.get("/v2/random_json", response_model=BlobItem, tags=["AwslV2"])
 def awsl_random_json() -> str:
-    session = DBSession()
-    try:
+    with DBSession() as session:
         blob = session.query(AwslBlob).order_by(
             func.rand()
         ).limit(1).one()
@@ -130,5 +117,3 @@ def awsl_random_json() -> str:
                 for blob_key, blob_pic in Blobs.parse_raw(blob.pic_info).blobs.items()
             }
         )
-    finally:
-        session.close()

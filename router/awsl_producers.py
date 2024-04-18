@@ -18,8 +18,7 @@ _logger = logging.getLogger(__name__)
 
 @router.get("/producers", response_model=List[ProducerRes], tags=["producers"])
 def awsl_producers():
-    session = DBSession()
-    try:
+    with DBSession() as session:
         producers = session.query(
             AwslProducer
         ).filter(
@@ -31,9 +30,7 @@ def awsl_producers():
             "uid": producer.uid,
             "name": producer.name
         } for producer in producers]
-    finally:
-        session.close()
-    return res
+        return res
 
 
 @router.post("/producers", response_model=bool, responses={404: {"model": Message}}, tags=["producers"])
@@ -55,8 +52,8 @@ def add_awsl_producers(producer: ProducerItem):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "No weibo user uid = {}".format(producer.uid)}
         )
-    session = DBSession()
-    try:
+
+    with DBSession() as session:
         res = session.query(AwslProducer).filter(
             AwslProducer.uid == producer.uid).one_or_none()
         if res:
@@ -75,15 +72,12 @@ def add_awsl_producers(producer: ProducerItem):
         session.add(awsl_producer)
         _logger.info("awsl add awsl_producer done %s" % awsl_producer.name)
         session.commit()
-    finally:
-        session.close()
     return True
 
 
 @router.get("/in_verification_producers", response_model=List[ProducerRes], tags=["producers"])
 def awsl_in_verification_producers():
-    session = DBSession()
-    try:
+    with DBSession() as session:
         producers = session.query(
             AwslProducer
         ).filter(
@@ -95,9 +89,7 @@ def awsl_in_verification_producers():
             "uid": producer.uid,
             "name": producer.name
         } for producer in producers]
-    finally:
-        session.close()
-    return res
+        return res
 
 
 @router.post("/approve_producers", response_model=bool, responses={404: {"model": Message}}, tags=["producers"])
@@ -113,8 +105,7 @@ def add_approve_producers(uid: str, token: str):
             content={"message": "token is not correct"}
         )
 
-    session = DBSession()
-    try:
+    with DBSession() as session:
         awsl_producer = session.query(
             AwslProducer
         ).filter(
@@ -134,6 +125,4 @@ def add_approve_producers(uid: str, token: str):
         awsl_producer.in_verification = False
         _logger.info("awsl approve awsl_producer done %s" % awsl_producer.name)
         session.commit()
-    finally:
-        session.close()
-    return True
+        return True

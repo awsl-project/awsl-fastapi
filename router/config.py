@@ -1,7 +1,7 @@
 import os
-from typing import List
+import logging
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 WB_DATA_URL = "https://weibo.com/ajax/statuses/mymblog?uid={}&page="
@@ -16,19 +16,15 @@ CHUNK_SIZE = 9
 class Settings(BaseSettings):
     cookie_sub: str
     token: str
-    ios_in_review_path: str
-    ios_in_review_uids: List[str]
-    ios_in_review_fake_path: str
     db_url: str
     origin: str
     cdn: str
-    enable_prometheus: bool
-    prometheus_host: str
-    instance_name: str
-    repeat_seconds: int
 
     class Config:
         env_file = os.environ.get("ENV_FILE", ".env")
 
 
 settings = Settings()
+logging.basicConfig(level=logging.INFO)
+_logger = logging.getLogger(__name__)
+_logger.info(settings.model_dump_json(indent=2))
