@@ -14,11 +14,12 @@ CHUNK_SIZE = 9
 
 
 class Settings(BaseSettings):
-    cookie_sub: str
-    token: str
-    db_url: str
-    origin: str
-    cdn: str
+    cookie_sub: str = ""
+    token: str = "token"
+    db_client_type: str = "mysql"
+    db_url: str = ""
+    origin: str = ""
+    cdn: str = ""
 
     class Config:
         env_file = os.environ.get("ENV_FILE", ".env")

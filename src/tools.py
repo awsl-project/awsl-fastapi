@@ -1,13 +1,7 @@
 import logging
 import requests
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-from .config import settings, WB_COOKIE
-
-engine = create_engine(settings.db_url, pool_size=100, pool_recycle=3600)
-DBSession = sessionmaker(bind=engine)
+from config import settings, WB_COOKIE
 
 _logger = logging.getLogger(__name__)
 

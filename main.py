@@ -4,9 +4,9 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from router.awsl_producers import router as producer_router
-from router.awsl_blob import router as blob_router
-from router.health_check import router as health_check_router
+from src.awsl_producers import router as producer_router
+from src.awsl_blob import router as blob_router
+from src.health_check import router as health_check_router
 
 
 app = FastAPI()
