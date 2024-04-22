@@ -23,7 +23,7 @@ class EndpointFilter(logging.Filter):
 # Add filter to the logger
 logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
-if os.environ.get("DEV"):
+if os.environ.get("CORS"):
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
