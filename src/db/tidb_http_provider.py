@@ -144,8 +144,8 @@ class TidbHttpClient(DBClientBase):
             " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
             " FROM awsl_blob"
             " INNER JOIN awsl_mblog ON awsl_blob.awsl_id=awsl_mblog.id"
-            f" {f"WHERE awsl_mblog.uid = '{sql_escape(uid)}'" if uid else ""}"
-            " ORDER BY awsl_blob.awsl_id DESC"
+            + (f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'" if uid else "")
+            + " ORDER BY awsl_blob.awsl_id DESC"
             f" LIMIT {sql_escape(offset)}, {sql_escape(limit)}"
         )
         res = [BlobItem(
