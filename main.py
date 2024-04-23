@@ -10,7 +10,7 @@ from src.awsl_blob import router as blob_router
 from src.health_check import router as health_check_router
 
 
-app = FastAPI()
+app = FastAPI(title="AWSL API", version="0.1.0", )
 
 
 class EndpointFilter(logging.Filter):

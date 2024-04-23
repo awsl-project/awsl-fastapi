@@ -1,6 +1,7 @@
 import os
 import logging
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -15,9 +16,9 @@ CHUNK_SIZE = 9
 
 class Settings(BaseSettings):
     cookie_sub: str = ""
-    token: str = "token"
+    token: str = Field(deafult="token", exclude=True)
     db_client_type: str = "mysql"
-    db_url: str = ""
+    db_url: str = Field(deafult="", exclude=True)
     origin: str = ""
     cdn: str = ""
 
