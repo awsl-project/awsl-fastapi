@@ -3,6 +3,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from src.awsl_producers import router as producer_router
 from src.awsl_blob import router as blob_router
@@ -35,6 +36,9 @@ if os.environ.get("CORS"):
 app.include_router(producer_router, prefix="")
 app.include_router(blob_router, prefix="")
 app.include_router(health_check_router, prefix="")
+
+# 301 Redirect to /docs
+app.get("/")(lambda: RedirectResponse("/docs"))
 
 
 if __name__ == "__main__":
