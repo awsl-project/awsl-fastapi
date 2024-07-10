@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 import base64
@@ -85,7 +86,7 @@ class TidbHttpClient(DBClientBase):
             sql_escape(producer.uid),
             sql_escape(profile["data"]['user']["screen_name"]),
             sql_escape(producer.keyword or ""),
-            sql_escape(profile["data"]['user']),
+            sql_escape(json.dumps(profile["data"]['user'])),
         )
         cls.post_query(insert_sql)
         _logger.info("awsl add awsl_producer done %s" % profile["data"]['user']["screen_name"])
