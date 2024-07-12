@@ -16,6 +16,7 @@ CHUNK_SIZE = 9
 
 class Settings(BaseSettings):
     cookie_sub: str = ""
+    allow_empty_keyword: bool = False
     token: str = Field(deafult="token", exclude=True)
     db_client_type: str = "mysql"
     db_url: str = Field(deafult="", exclude=True)

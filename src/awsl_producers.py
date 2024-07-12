@@ -27,7 +27,7 @@ def add_awsl_producers(producer: ProducerItem):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "uid is None"}
         )
-    if not producer.keyword:
+    if not settings.allow_empty_keyword and not producer.keyword:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "keyword is null"}

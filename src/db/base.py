@@ -63,3 +63,19 @@ class DBClientBase(metaclass=MetaDBClient):
     @classmethod
     def awsl_random_json(cls) -> str:
         ...
+
+    @classmethod
+    def awsl_pic_list(cls, uid: str, limit: int, offset: int) -> List[BlobItem]:
+        ...
+
+    @classmethod
+    def awsl_pic_list_count(cls, uid: str) -> int:
+        ...
+
+    @classmethod
+    def awsl_pic_random(cls) -> str:
+        ...
+
+    @classmethod
+    def awsl_pic_random_json(cls) -> str:
+        ...

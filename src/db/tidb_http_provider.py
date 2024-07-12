@@ -15,7 +15,7 @@ from config import WB_URL_PREFIX, settings
 from src.db.tidb_models import TiDBResponse
 from src.models.models import AwslProducer
 from src.models.pydantic_models import Blob, Blobs
-from src.response_models import BlobItem, ProducerItem, ProducerRes
+from src.response_models import BlobItem, PicInfo, ProducerItem, ProducerRes
 
 from .base import DBClientBase
 
@@ -211,4 +211,67 @@ class TidbHttpClient(DBClientBase):
                 )
                 for blob_key, blob_pic in Blobs.model_validate_json(blob['pic_info']).blobs.items()
             }
+        )
+
+    @classmethod
+    def awsl_pic_list(cls, uid: str, limit: int, offset: int) -> List[BlobItem]:
+        res_json = cls.post_query(
+            "SELECT awsl_pic.pic_id, awsl_pic.pic_info,"
+            " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
+            " FROM awsl_pic"
+            " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
+            + (f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'" if uid else "")
+            + " ORDER BY awsl_pic.awsl_id DESC"
+            f" LIMIT {sql_escape(offset)}, {sql_escape(limit)}"
+        )
+        res = [BlobItem(
+            wb_url=WB_URL_PREFIX.format(pic['re_user_id'], pic['re_mblogid']),
+            pic_id=pic['pic_id'],
+            pic_info=PicInfo.model_validate_json(pic['pic_info']).root
+        ) for pic in res_json]
+        return res
+
+    @classmethod
+    def awsl_pic_list_count(cls, uid: str) -> int:
+        res = cls.post_query(
+            "SELECT count(1) AS count FROM awsl_pic"
+            + (
+                " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
+                f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'"
+            ) if uid else ""
+        )
+        if not res or not res[0] or not res[0].get("count"):
+            return 0
+        return res[0]["count"]
+
+    @classmethod
+    def awsl_pic_random(cls) -> str:
+        res = cls.post_query("SELECT pic_info FROM awsl_pic ORDER BY rand() LIMIT 1")
+        if not res or not res[0]:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No random pic found"
+            )
+        url_dict = PicInfo.model_validate_json(res[0]['pic_info']).root
+        return url_dict["original"].url
+
+    @classmethod
+    def awsl_pic_random_json(cls) -> str:
+        res_json = cls.post_query(
+            "SELECT awsl_pic.pic_id, awsl_pic.pic_info,"
+            " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
+            " FROM awsl_pic"
+            " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
+            " ORDER BY rand() LIMIT 1"
+        )
+        if not res_json:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No random pic found"
+            )
+        res = res_json[0]
+        return BlobItem(
+            wb_url=WB_URL_PREFIX.format(res['re_user_id'], res['re_mblogid']),
+            pic_id=res['pic_id'],
+            pic_info=PicInfo.model_validate_json(res['pic_info']).root
         )
