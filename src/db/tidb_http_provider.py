@@ -165,19 +165,28 @@ class TidbHttpClient(DBClientBase):
     @classmethod
     def awsl_list_count(cls, uid: str) -> int:
         res = cls.post_query(
-            "SELECT count(1) AS count FROM awsl_blob"
+            "SELECT count(*) AS count FROM awsl_blob"
             + (
                 " INNER JOIN awsl_mblog ON awsl_blob.awsl_id=awsl_mblog.id"
-                f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'"
-            ) if uid else ""
+                + f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'"
+                if uid else ""
+            )
         )
         if not res or not res[0] or not res[0].get("count"):
             return 0
         return res[0]["count"]
 
     @classmethod
-    def awsl_random(cls) -> str:
-        res = cls.post_query("SELECT pic_info FROM awsl_blob ORDER BY rand() LIMIT 1")
+    def awsl_random(cls, uid: str) -> str:
+        res = cls.post_query(
+            "SELECT pic_info FROM awsl_blob "
+            + (
+                " INNER JOIN awsl_mblog ON awsl_blob.awsl_id=awsl_mblog.id"
+                f" WHERE awsl_mblog.uid = '{sql_escape(uid)}' "
+                if uid else ""
+            )
+            + " ORDER BY rand() LIMIT 1"
+        )
         if not res or not res[0]:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -187,13 +196,14 @@ class TidbHttpClient(DBClientBase):
         return url_dict["original"].url
 
     @classmethod
-    def awsl_random_json(cls) -> str:
+    def awsl_random_json(cls, uid: str) -> str:
         blobs_json = cls.post_query(
             "SELECT awsl_blob.pic_id, awsl_blob.pic_info,"
-            " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
-            " FROM awsl_blob"
-            " INNER JOIN awsl_mblog ON awsl_blob.awsl_id=awsl_mblog.id"
-            " ORDER BY rand() LIMIT 1"
+            + " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
+            + " FROM awsl_blob"
+            + " INNER JOIN awsl_mblog ON awsl_blob.awsl_id=awsl_mblog.id"
+            + (f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'" if uid else "")
+            + " ORDER BY rand() LIMIT 1"
         )
         if not blobs_json:
             raise HTTPException(
@@ -238,15 +248,24 @@ class TidbHttpClient(DBClientBase):
             + (
                 " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
                 f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'"
-            ) if uid else ""
+                if uid else ""
+            )
         )
         if not res or not res[0] or not res[0].get("count"):
             return 0
         return res[0]["count"]
 
     @classmethod
-    def awsl_pic_random(cls) -> str:
-        res = cls.post_query("SELECT pic_info FROM awsl_pic ORDER BY rand() LIMIT 1")
+    def awsl_pic_random(cls, uid: str) -> str:
+        res = cls.post_query(
+            "SELECT pic_info FROM awsl_pic"
+            + (
+                " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
+                f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'"
+                if uid else ""
+            )
+            + " ORDER BY rand() LIMIT 1"
+        )
         if not res or not res[0]:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -256,13 +275,14 @@ class TidbHttpClient(DBClientBase):
         return url_dict["original"].url
 
     @classmethod
-    def awsl_pic_random_json(cls) -> str:
+    def awsl_pic_random_json(cls, uid: str) -> str:
         res_json = cls.post_query(
             "SELECT awsl_pic.pic_id, awsl_pic.pic_info,"
-            " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
-            " FROM awsl_pic"
-            " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
-            " ORDER BY rand() LIMIT 1"
+            + " awsl_mblog.re_user_id, awsl_mblog.re_mblogid"
+            + " FROM awsl_pic"
+            + " INNER JOIN awsl_mblog ON awsl_pic.awsl_id=awsl_mblog.id"
+            + (f" WHERE awsl_mblog.uid = '{sql_escape(uid)}'" if uid else "")
+            + " ORDER BY rand() LIMIT 1"
         )
         if not res_json:
             raise HTTPException(

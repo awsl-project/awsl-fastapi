@@ -27,10 +27,10 @@ def awsl_list_count(uid: Optional[str] = "") -> int:
 
 
 @router.get("/v2/random", response_model=str, tags=["AwslV2"])
-def awsl_random() -> str:
-    return DBClientBase.get_client().awsl_random()
+def awsl_random(uid: Optional[str] = "") -> str:
+    return DBClientBase.get_client().awsl_random(uid)
 
 
 @router.get("/v2/random_json", response_model=BlobItem, tags=["AwslV2"])
-def awsl_random_json() -> str:
-    return DBClientBase.get_client().awsl_random_json()
+def awsl_random_json(uid: Optional[str] = "") -> str:
+    return DBClientBase.get_client().awsl_random_json(uid)

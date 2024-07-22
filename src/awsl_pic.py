@@ -27,10 +27,10 @@ def awsl_pic_list_count(uid: Optional[str] = "") -> int:
 
 
 @router.get("/awsl_pic/random", response_model=str, tags=["Awsl Pic"])
-def awsl_pic_random() -> str:
-    return DBClientBase.get_client().awsl_pic_random()
+def awsl_pic_random(uid: Optional[str] = "") -> str:
+    return DBClientBase.get_client().awsl_pic_random(uid)
 
 
 @router.get("/awsl_pic/random_json", response_model=BlobItem, tags=["Awsl Pic"])
-def awsl_pic_random_json() -> str:
-    return DBClientBase.get_client().awsl_pic_random_json()
+def awsl_pic_random_json(uid: Optional[str] = "") -> str:
+    return DBClientBase.get_client().awsl_pic_random_json(uid)

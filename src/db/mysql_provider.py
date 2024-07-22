@@ -144,18 +144,26 @@ class MysqlClient(DBClientBase):
             return int(res[0]) if res else 0
 
     @classmethod
-    def awsl_random(cls) -> str:
+    def awsl_random(cls, uid: str) -> str:
         with cls.DBSession() as session:
-            blob = session.query(AwslBlob).order_by(
+            blob = session.query(AwslBlob).join(Mblog, AwslBlob.awsl_id == Mblog.id).filter(
+                Mblog.uid == uid
+            ).order_by(
+                func.rand()
+            ).limit(1).one() if uid else session.query(AwslBlob).order_by(
                 func.rand()
             ).limit(1).one()
             url_dict = Blobs.model_validate_json(blob.pic_info).blobs
             return url_dict["original"].url
 
     @classmethod
-    def awsl_random_json(cls) -> str:
+    def awsl_random_json(cls, uid: str) -> str:
         with cls.DBSession() as session:
-            blob = session.query(AwslBlob).order_by(
+            blob = session.query(AwslBlob).join(Mblog, AwslBlob.awsl_id == Mblog.id).filter(
+                Mblog.uid == uid
+            ).order_by(
+                func.rand()
+            ).limit(1).one() if uid else session.query(AwslBlob).order_by(
                 func.rand()
             ).limit(1).one()
             return BlobItem(
@@ -206,18 +214,30 @@ class MysqlClient(DBClientBase):
             return int(res[0]) if res else 0
 
     @classmethod
-    def awsl_pic_random(cls) -> str:
+    def awsl_pic_random(cls, uid: str) -> str:
         with cls.DBSession() as session:
-            pic = session.query(Pic).order_by(
+            pic = session.query(Pic).join(
+                Mblog, Pic.awsl_id == Mblog.id
+            ).filter(
+                Mblog.uid == uid
+            ).order_by(
+                func.rand()
+            ).limit(1).one() if uid else session.query(Pic).order_by(
                 func.rand()
             ).limit(1).one()
             url_dict = PicInfo.model_validate_json(pic.pic_info).root
             return url_dict["original"].url
 
     @classmethod
-    def awsl_pic_random_json(cls) -> str:
+    def awsl_pic_random_json(cls, uid: str) -> str:
         with cls.DBSession() as session:
-            blob = session.query(Pic).order_by(
+            blob = session.query(Pic).join(
+                Mblog, Pic.awsl_id == Mblog.id
+            ).filter(
+                Mblog.uid == uid
+            ).order_by(
+                func.rand()
+            ).limit(1).one() if uid else session.query(Pic).order_by(
                 func.rand()
             ).limit(1).one()
             return BlobItem(

@@ -57,11 +57,11 @@ class DBClientBase(metaclass=MetaDBClient):
         ...
 
     @classmethod
-    def awsl_random(cls) -> str:
+    def awsl_random(cls, uid: str) -> str:
         ...
 
     @classmethod
-    def awsl_random_json(cls) -> str:
+    def awsl_random_json(cls, uid: str) -> str:
         ...
 
     @classmethod
@@ -73,9 +73,9 @@ class DBClientBase(metaclass=MetaDBClient):
         ...
 
     @classmethod
-    def awsl_pic_random(cls) -> str:
+    def awsl_pic_random(cls, uid: str) -> str:
         ...
 
     @classmethod
-    def awsl_pic_random_json(cls) -> str:
+    def awsl_pic_random_json(cls, uid: str) -> str:
         ...
