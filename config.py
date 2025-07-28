@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     token: str = Field(deafult="token", exclude=True)
     db_client_type: str = "mysql"
     db_url: str = Field(deafult="", exclude=True)
+    use_db_pool: bool = True
     origin: str = ""
     cdn: str = ""
 

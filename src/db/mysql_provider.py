@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi import status
 from fastapi.responses import JSONResponse
-from sqlalchemy import create_engine, func
+from sqlalchemy import NullPool, create_engine, func
 from sqlalchemy.orm import sessionmaker
 
 from config import WB_URL_PREFIX, settings
@@ -25,7 +25,18 @@ class MysqlClient(DBClientBase):
 
     @classmethod
     def init_db_client(cls):
-        engine = create_engine(settings.db_url, pool_size=100, pool_recycle=3600)
+        # do not use db pool
+        if settings.use_db_pool:
+            engine = create_engine(
+                settings.db_url,
+                pool_size=100,
+                pool_recycle=3600
+            )
+        else:
+            engine = create_engine(
+                settings.db_url,
+                poolclass=NullPool
+            )
         cls.DBSession = sessionmaker(bind=engine)
 
     @classmethod
