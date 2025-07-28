@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     db_client_type: str = "mysql"
     db_url: str = Field(deafult="", exclude=True)
     use_db_pool: bool = True
+    db_pool_size: int = 20
     origin: str = ""
     cdn: str = ""
 

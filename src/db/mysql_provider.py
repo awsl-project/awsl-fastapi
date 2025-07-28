@@ -29,7 +29,7 @@ class MysqlClient(DBClientBase):
         if settings.use_db_pool:
             engine = create_engine(
                 settings.db_url,
-                pool_size=100,
+                pool_size=settings.db_pool_size,
                 pool_recycle=3600
             )
         else:
