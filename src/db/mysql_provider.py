@@ -7,7 +7,7 @@ from sqlalchemy import NullPool, create_engine, func
 from sqlalchemy.orm import sessionmaker
 
 from config import WB_URL_PREFIX, settings
-from src.models.models import AwslBlob, AwslProducer, Mblog, Pic
+from src.models.models import AwslBlob, AwslBlobV2, AwslProducer, Mblog, Pic
 from src.models.pydantic_models import Blob, Blobs
 from src.response_models import BlobItem, PicInfo, ProducerItem, ProducerRes
 
@@ -256,4 +256,67 @@ class MysqlClient(DBClientBase):
                     blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
                 pic_id=blob.pic_id,
                 pic_info=PicInfo.model_validate_json(blob.pic_info).root
+            )
+
+    # V3 API methods using AwslBlobV2
+    @classmethod
+    def awsl_v3_list(cls, uid: str, limit: int, offset: int) -> List[BlobItem]:
+        with cls.DBSession() as session:
+            blobs = session.query(AwslBlobV2).join(
+                Mblog, AwslBlobV2.awsl_id == Mblog.id
+            ).filter(
+                Mblog.uid == uid
+            ).order_by(
+                AwslBlobV2.awsl_id.desc()
+            ).limit(limit).offset(offset).all() if uid else session.query(
+                AwslBlobV2
+            ).join(
+                Mblog, AwslBlobV2.awsl_id == Mblog.id
+            ).order_by(
+                AwslBlobV2.awsl_id.desc()
+            ).limit(limit).offset(offset).all()
+            res = [BlobItem(
+                wb_url=WB_URL_PREFIX.format(
+                    blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
+                pic_id=blob.pic_id,
+                pic_info=Blobs.model_validate_json(blob.pic_info).blobs
+            ) for blob in blobs if blob.awsl_mblog]
+            return res
+
+    @classmethod
+    def awsl_v3_list_count(cls, uid: str) -> int:
+        with cls.DBSession() as session:
+            res = session.query(func.count(AwslBlobV2.id)).join(Mblog, AwslBlobV2.awsl_id == Mblog.id).filter(
+                Mblog.uid == uid
+            ).one() if uid else session.query(func.count(AwslBlobV2.id)).one()
+            return int(res[0]) if res else 0
+
+    @classmethod
+    def awsl_v3_random(cls, uid: str) -> str:
+        with cls.DBSession() as session:
+            blob = session.query(AwslBlobV2).join(Mblog, AwslBlobV2.awsl_id == Mblog.id).filter(
+                Mblog.uid == uid
+            ).order_by(
+                func.rand()
+            ).limit(1).one() if uid else session.query(AwslBlobV2).order_by(
+                func.rand()
+            ).limit(1).one()
+            url_dict = Blobs.model_validate_json(blob.pic_info).blobs
+            return url_dict["original"].url
+
+    @classmethod
+    def awsl_v3_random_json(cls, uid: str) -> BlobItem:
+        with cls.DBSession() as session:
+            blob = session.query(AwslBlobV2).join(Mblog, AwslBlobV2.awsl_id == Mblog.id).filter(
+                Mblog.uid == uid
+            ).order_by(
+                func.rand()
+            ).limit(1).one() if uid else session.query(AwslBlobV2).order_by(
+                func.rand()
+            ).limit(1).one()
+            return BlobItem(
+                wb_url=WB_URL_PREFIX.format(
+                    blob.awsl_mblog.re_user_id, blob.awsl_mblog.re_mblogid),
+                pic_id=blob.pic_id,
+                pic_info=Blobs.model_validate_json(blob.pic_info).blobs
             )

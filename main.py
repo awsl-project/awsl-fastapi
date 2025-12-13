@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 
 from src.awsl_producers import router as producer_router
 from src.awsl_blob import router as blob_router
+from src.awsl_blob_v3 import router as blob_v3_router
 from src.awsl_pic import router as pic_router
 from src.health_check import router as health_check_router
 
@@ -36,6 +37,7 @@ if os.environ.get("CORS"):
 
 app.include_router(producer_router, prefix="")
 app.include_router(blob_router, prefix="")
+app.include_router(blob_v3_router, prefix="")
 app.include_router(pic_router, prefix="")
 app.include_router(health_check_router, prefix="")
 
