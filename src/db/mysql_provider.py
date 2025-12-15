@@ -258,9 +258,9 @@ class MysqlClient(DBClientBase):
                 pic_info=PicInfo.model_validate_json(blob.pic_info).root
             )
 
-    # V3 API methods using AwslBlobV2
+    # V2 API methods using AwslBlobV2
     @classmethod
-    def awsl_v3_list(cls, uid: str, limit: int, offset: int) -> List[BlobItem]:
+    def awsl_v2_list(cls, uid: str, limit: int, offset: int) -> List[BlobItem]:
         with cls.DBSession() as session:
             blobs = session.query(AwslBlobV2).join(
                 Mblog, AwslBlobV2.awsl_id == Mblog.id
@@ -284,7 +284,7 @@ class MysqlClient(DBClientBase):
             return res
 
     @classmethod
-    def awsl_v3_list_count(cls, uid: str) -> int:
+    def awsl_v2_list_count(cls, uid: str) -> int:
         with cls.DBSession() as session:
             res = session.query(func.count(AwslBlobV2.id)).join(Mblog, AwslBlobV2.awsl_id == Mblog.id).filter(
                 Mblog.uid == uid
@@ -292,7 +292,7 @@ class MysqlClient(DBClientBase):
             return int(res[0]) if res else 0
 
     @classmethod
-    def awsl_v3_random(cls, uid: str) -> str:
+    def awsl_v2_random(cls, uid: str) -> str:
         with cls.DBSession() as session:
             blob = session.query(AwslBlobV2).join(Mblog, AwslBlobV2.awsl_id == Mblog.id).filter(
                 Mblog.uid == uid
@@ -305,7 +305,7 @@ class MysqlClient(DBClientBase):
             return url_dict["original"].url
 
     @classmethod
-    def awsl_v3_random_json(cls, uid: str) -> BlobItem:
+    def awsl_v2_random_json(cls, uid: str) -> BlobItem:
         with cls.DBSession() as session:
             blob = session.query(AwslBlobV2).join(Mblog, AwslBlobV2.awsl_id == Mblog.id).filter(
                 Mblog.uid == uid
