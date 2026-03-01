@@ -11,6 +11,13 @@ router = APIRouter()
 _logger = logging.getLogger(__name__)
 
 
+def append_image_mime_type(url: str) -> str:
+    if "mime_type=" in url:
+        return url
+    separator = "&" if "?" in url else "?"
+    return f"{url}{separator}mime_type=image/jpeg"
+
+
 @router.get("/v2/list", response_model=List[BlobItem], responses={404: {"model": Message}}, tags=["AwslV2"])
 def awsl_v2_list(uid: Optional[str] = "", limit: Optional[int] = 10, offset: Optional[int] = 0):
     if limit > 1000:
@@ -28,7 +35,8 @@ def awsl_v2_list_count(uid: Optional[str] = "") -> int:
 
 @router.get("/v2/random", response_model=str, tags=["AwslV2"])
 def awsl_v2_random(uid: Optional[str] = "") -> str:
-    return DBClientBase.get_client().awsl_v2_random(uid)
+    url = DBClientBase.get_client().awsl_v2_random(uid)
+    return append_image_mime_type(url)
 
 
 @router.get("/v2/random_json", response_model=BlobItem, tags=["AwslV2"])
