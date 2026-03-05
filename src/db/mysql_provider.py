@@ -7,7 +7,7 @@ from sqlalchemy import NullPool, create_engine, func
 from sqlalchemy.orm import sessionmaker
 
 from config import WB_URL_PREFIX, settings
-from src.models.models import AwslBlob, AwslBlobV2, AwslProducer, Mblog, Pic
+from src.models.models import AppSetting, AwslBlob, AwslBlobV2, AwslProducer, Mblog, Pic
 from src.models.pydantic_models import Blob, Blobs
 from src.response_models import BlobItem, PicInfo, ProducerItem, ProducerRes
 
@@ -320,3 +320,19 @@ class MysqlClient(DBClientBase):
                 pic_id=blob.pic_id,
                 pic_info=Blobs.model_validate_json(blob.pic_info).blobs
             )
+
+    @classmethod
+    def get_setting(cls, key: str):
+        with cls.DBSession() as session:
+            row = session.query(AppSetting).filter(AppSetting.key == key).one_or_none()
+            return row.value if row else None
+
+    @classmethod
+    def set_setting(cls, key: str, value: str):
+        with cls.DBSession() as session:
+            row = session.query(AppSetting).filter(AppSetting.key == key).one_or_none()
+            if row:
+                row.value = value
+            else:
+                session.add(AppSetting(key=key, value=value))
+            session.commit()

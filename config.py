@@ -1,5 +1,8 @@
+import json
 import os
 import logging
+import threading
+from typing import Dict
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -7,11 +10,11 @@ from pydantic_settings import BaseSettings
 
 WB_DATA_URL = "https://weibo.com/ajax/statuses/mymblog?uid={}&page="
 WB_SHOW_URL = "https://weibo.com/ajax/statuses/show?id={}"
-WB_COOKIE = "SUB={}"
 WB_PROFILE = "https://weibo.com/ajax/profile/info?uid={}"
 WB_URL_PREFIX = "https://weibo.com/{}/{}"
-WB_COOKIE = "SUB={}"
 CHUNK_SIZE = 9
+
+WB_HEADERS_KEY = "wb_headers"
 
 
 class Settings(BaseSettings):
@@ -33,3 +36,48 @@ settings = Settings()
 logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger(__name__)
 _logger.info(settings.model_dump_json(indent=2))
+
+
+class WeiboHeaders:
+    """Thread-safe mutable store for Weibo API request headers, persisted to DB."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._headers: Dict[str, str] = {
+            "cookie": f"SUB={settings.cookie_sub}"
+        } if settings.cookie_sub else {}
+
+    def load_from_db(self):
+        from src.db.base import DBClientBase
+        try:
+            raw = DBClientBase.get_client().get_setting(WB_HEADERS_KEY)
+            if raw:
+                with self._lock:
+                    self._headers = json.loads(raw)
+                _logger.info("wb_headers loaded from db")
+        except Exception as e:
+            _logger.warning("failed to load wb_headers from db: %s", e)
+
+    def _save_to_db(self):
+        from src.db.base import DBClientBase
+        try:
+            DBClientBase.get_client().set_setting(WB_HEADERS_KEY, json.dumps(self._headers))
+        except Exception as e:
+            _logger.warning("failed to save wb_headers to db: %s", e)
+
+    def get(self) -> Dict[str, str]:
+        with self._lock:
+            return dict(self._headers)
+
+    def update(self, headers: Dict[str, str]):
+        with self._lock:
+            self._headers.update(headers)
+            self._save_to_db()
+
+    def replace(self, headers: Dict[str, str]):
+        with self._lock:
+            self._headers = dict(headers)
+            self._save_to_db()
+
+
+wb_headers = WeiboHeaders()

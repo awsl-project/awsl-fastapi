@@ -9,6 +9,7 @@ from src.awsl_producers import router as producer_router
 from src.awsl_blob_v2 import router as blob_router
 from src.awsl_pic import router as pic_router
 from src.health_check import router as health_check_router
+from src.admin import router as admin_router
 
 
 app = FastAPI(title="AWSL API", version="0.1.0", )
@@ -38,9 +39,16 @@ app.include_router(producer_router, prefix="")
 app.include_router(blob_router, prefix="")
 app.include_router(pic_router, prefix="")
 app.include_router(health_check_router, prefix="")
+app.include_router(admin_router, prefix="")
 
 # 301 Redirect to /docs
 app.get("/")(lambda: RedirectResponse("/docs"))
+
+
+@app.on_event("startup")
+def startup():
+    from config import wb_headers
+    wb_headers.load_from_db()
 
 
 if __name__ == "__main__":

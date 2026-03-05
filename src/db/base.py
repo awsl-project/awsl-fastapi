@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException, status
 
 from config import settings
@@ -95,4 +95,12 @@ class DBClientBase(metaclass=MetaDBClient):
 
     @classmethod
     def awsl_v2_random_json(cls, uid: str) -> BlobItem:
+        ...
+
+    @classmethod
+    def get_setting(cls, key: str) -> Optional[str]:
+        ...
+
+    @classmethod
+    def set_setting(cls, key: str, value: str) -> None:
         ...

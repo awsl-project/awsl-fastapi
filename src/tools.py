@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from config import settings, WB_COOKIE
+from config import wb_headers
 
 _logger = logging.getLogger(__name__)
 
@@ -11,9 +11,7 @@ class Tools:
     @staticmethod
     def wb_get(url) -> dict:
         try:
-            res = requests.get(url=url, headers={
-                "cookie": WB_COOKIE.format(settings.cookie_sub)
-            })
+            res = requests.get(url=url, headers=wb_headers.get())
             return res.json()
         except Exception as e:
             _logger.exception(e)

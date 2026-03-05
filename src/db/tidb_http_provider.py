@@ -295,3 +295,18 @@ class TidbHttpClient(DBClientBase):
             pic_id=res['pic_id'],
             pic_info=PicInfo.model_validate_json(res['pic_info']).root
         )
+
+    @classmethod
+    def get_setting(cls, key: str):
+        res = cls.post_query(
+            f"SELECT `value` FROM app_setting WHERE `key` = '{sql_escape(key)}' LIMIT 1"
+        )
+        return res[0]["value"] if res else None
+
+    @classmethod
+    def set_setting(cls, key: str, value: str):
+        escaped_value = sql_escape(value)
+        cls.post_query(
+            f"INSERT INTO app_setting (`key`, `value`) VALUES ('{sql_escape(key)}', '{escaped_value}')"
+            f" ON DUPLICATE KEY UPDATE `value` = '{escaped_value}'"
+        )
