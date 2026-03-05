@@ -46,20 +46,3 @@ def add_awsl_producers(producer: ProducerItem):
 @router.get("/in_verification_producers", response_model=List[ProducerRes], tags=["producers"])
 def awsl_in_verification_producers():
     return DBClientBase.get_client().awsl_in_verification_producers()
-
-
-@router.post("/approve_producers", response_model=bool, responses={404: {"model": Message}}, tags=["producers"])
-def approve_producers(uid: str, token: str):
-    if not uid:
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={"message": "uid is None"}
-        )
-    if token != settings.token:
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={"message": "token is not correct"}
-        )
-
-    DBClientBase.get_client().approve_producers(uid=uid)
-    return True

@@ -58,10 +58,10 @@ class WeiboHeaders:
         except Exception as e:
             _logger.warning("failed to load wb_headers from db: %s", e)
 
-    def _save_to_db(self):
+    def _save_to_db(self, data: Dict[str, str]):
         from src.db.base import DBClientBase
         try:
-            DBClientBase.get_client().set_setting(WB_HEADERS_KEY, json.dumps(self._headers))
+            DBClientBase.get_client().set_setting(WB_HEADERS_KEY, json.dumps(data))
         except Exception as e:
             _logger.warning("failed to save wb_headers to db: %s", e)
 
@@ -72,12 +72,14 @@ class WeiboHeaders:
     def update(self, headers: Dict[str, str]):
         with self._lock:
             self._headers.update(headers)
-            self._save_to_db()
+            snapshot = dict(self._headers)
+        self._save_to_db(snapshot)
 
     def replace(self, headers: Dict[str, str]):
+        snapshot = dict(headers)
         with self._lock:
-            self._headers = dict(headers)
-            self._save_to_db()
+            self._headers = snapshot
+        self._save_to_db(snapshot)
 
 
 wb_headers = WeiboHeaders()

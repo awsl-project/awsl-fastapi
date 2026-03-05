@@ -1,10 +1,12 @@
 import logging
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from config import wb_headers
 from src.awsl_producers import router as producer_router
 from src.awsl_blob_v2 import router as blob_router
 from src.awsl_pic import router as pic_router
@@ -12,7 +14,13 @@ from src.health_check import router as health_check_router
 from src.admin import router as admin_router
 
 
-app = FastAPI(title="AWSL API", version="0.1.0", )
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    wb_headers.load_from_db()
+    yield
+
+
+app = FastAPI(title="AWSL API", version="0.1.0", lifespan=lifespan)
 
 
 class EndpointFilter(logging.Filter):
@@ -43,12 +51,6 @@ app.include_router(admin_router, prefix="")
 
 # 301 Redirect to /docs
 app.get("/")(lambda: RedirectResponse("/docs"))
-
-
-@app.on_event("startup")
-def startup():
-    from config import wb_headers
-    wb_headers.load_from_db()
 
 
 if __name__ == "__main__":
