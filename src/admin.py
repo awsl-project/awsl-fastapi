@@ -39,14 +39,6 @@ def get_wb_headers():
 
 
 @router.put("/wb_headers", response_model=Dict[str, str], dependencies=[Depends(verify_token)])
-def update_wb_headers(headers: Dict[str, str], merge: bool = True):
-    """Update Weibo API headers.
-
-    - merge=True (default): merge into existing headers
-    - merge=False: replace all headers entirely
-    """
-    if merge:
-        wb_headers.update(headers)
-    else:
-        wb_headers.replace(headers)
+def update_wb_headers(headers: Dict[str, str]):
+    wb_headers.replace(headers)
     return wb_headers.get()

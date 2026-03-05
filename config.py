@@ -69,12 +69,6 @@ class WeiboHeaders:
         with self._lock:
             return dict(self._headers)
 
-    def update(self, headers: Dict[str, str]):
-        with self._lock:
-            self._headers.update(headers)
-            snapshot = dict(self._headers)
-        self._save_to_db(snapshot)
-
     def replace(self, headers: Dict[str, str]):
         snapshot = dict(headers)
         with self._lock:
